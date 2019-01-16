@@ -1,23 +1,27 @@
 sudo: false
+dist: trusty
 language: groovy
 jdk:
 - oraclejdk8
-sudo: false
-branches:
-  only:
-  - master
-  - 3.x
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.m2
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-after_success:
-  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && travis_retry ./gradlew publish'
-env:
-  global:
-  - secure: IF4jY8XTU5Nmrqs4aja6sIgC93VgBPxw8ylyoMQhePkB35SK2EHZ5cU7Tx3FSvEmDUQk6cq89toZHiiiGCISdCN3lawDpOFIeMZs3g98hc6cMBd4Wx7ncjO3oKDsIn+DFrF11TgMrwtjUUH/4TGpc32kyf0L5J/O+vqUO4vK6gs=
-  - secure: fRTVEF2L2MOgL1ZSGV2bhclUc+wGyTL7zBwB7qEgMpgXQvQQH8Q869I4G/9sFQdRAhyEYXyEPDtW6eVA93mEAxnelzJ/PbFaaoeRFDdIaqklMkwIaVpuRZiJ7O4dIFAo2Cn4quoJAKez9BPNFpS3h+UpCWdOtaloTTMYKp8YZNU=
+  - "$HOME/.m2"
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+script:
+- ./gradlew clean && ./gradlew war
+deploy:
+  provider: releases
+  api_key:
+    secure: YNoYcXOfBmk/3qSeIrI4jLaj2i5BcNROSpPU2ntkZZVVD0ARZIKgFlxKAsifc/ou0ZyHeVhf/SEMgpqNThtj5jVqGqnkC/8jJQHmIL4lH5UjlltCYJyASlxwI/Dluh1IT630fkc6tKhigXIdVhnJNS7S8x14D9MjYtfbXWCZn2PGKLSvjQ55+Av4dqwyKoPo7PJYs0L+La4cKwYpGPireEfMfKrqMQJG0I9tcgE96eFnM6Ro3p1P3TGNaB+Rjk5AJeMLRlEp58tWy7PB3GbBhFoH4hbzjpt7xOQ2p/zy7U73R9jD6gy7ffZ5EoDPVMltN/GwDEve78QxpSj4heMpdv7/bF+x0b5UeW91gcAevfsjIWyvT+sFThNpu31xgsJx64/BE4mlWUH9cehs8kMW8OMKxwf8PQo1OFjq65FVLwQ5m6Gh7ZPTRZEJq5nwxU6ufhLOcczqS/SjnphuqjtluZi/yad2X1t5lm6Qb7k/uw5jar24fOpYSrN/sVYrndS3OBWIKNRxC7FX8a4qkaAdGvmxK0eICSNTqhg9Dns2mR3smc/DEqrvT3DAjvRHMov5/sYsqG5335Hu6D/lfLrCsOBLir/fic15YcQUEWJdEfJpAyDwS6emuWXxLSY8bOeFLAza725/9Jo/99wDwoxPPBJZtnQ/KVVqrMJ7ZbXbLH8=
+  file_glob: true
+  file: build/libs/specieslist-webapp-*.war
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: bioatlas/specieslist-webapp
+    all-branches: true
+    tags: true
